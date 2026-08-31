@@ -19,6 +19,10 @@ app.set('view engine', 'html');
 // load route
 require('./route')(app);
 
+// consume the zip queue from this same instance (simplification pour render.com ;
+// en prod ce worker devrait tourner sur un serveur séparé)
+require('./queue_consumer');
+
 // server
 const port = process.env.PORT || 3000;
 app.server = app.listen(port);
