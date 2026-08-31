@@ -1,5 +1,6 @@
 const formValidator = require('./form_validator');
 const photoModel = require('./photo_model');
+const queueProducer = require('./queue_producer');
 
 function route(app) {
   app.get('/', (req, res) => {
@@ -46,7 +47,15 @@ function route(app) {
       return res.status(400).send({ error: 'missing "tags" query parameter' });
     }
 
-    return res.status(202).send({ status: 'accepted', tags });
+    // Producer : on envoie les tags dans la queue et on répond immédiatement.
+    return queueProducer
+      .publishZipRequest(tags)
+      .then(messageId => {
+        return res.status(202).send({ status: 'queued', messageId, tags });
+      })
+      .catch(error => {
+        return res.status(500).send({ error: error.message });
+      });
   });
 }
 

@@ -16,6 +16,8 @@
     "prettier": "prettier --write app/*.js app/__{tests,mocks}__/*.js e2e_tests/*.js"
   },
   "dependencies": {
+    "@google-cloud/pubsub": "^6.0.1",
+    "dotenv": "^17.4.2",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "got": "^14.4.9",
