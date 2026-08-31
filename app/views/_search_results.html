@@ -19,6 +19,10 @@
         <% }) %>
       </ul>
 
+      <form method="POST" action="/zip?tags=<%= encodeURIComponent(tagsParameter) %>">
+        <button type="submit" class="btn btn-primary">Zip the first 10 photos</button>
+      </form>
+
     <% } else { %>
       <div class="alert alert-info"><strong>No results</strong></div>
     <% } %>
