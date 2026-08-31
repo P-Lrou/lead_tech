@@ -1,0 +1,27 @@
+name: Publish Docker image (production)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-production-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push the Docker image
+        run: |
+          docker build . --tag ghcr.io/p-lrou/lead_tech:production
+          docker push ghcr.io/p-lrou/lead_tech:production
