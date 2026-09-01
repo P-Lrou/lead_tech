@@ -4,15 +4,15 @@ const archiver = require('archiver');
 const { Storage } = require('@google-cloud/storage');
 
 const photoModel = require('./photo_model');
+const firebaseDb = require('./firebase_db');
 
 // Storage client: authenticates automatically from GOOGLE_APPLICATION_CREDENTIALS.
 const storage = new Storage();
 
 const bucketName = process.env.GCS_BUCKET || 'ecni22026bucket';
 
-// No database for this experiment: finished jobs are kept in a module-level
-// variable (the worker runs on the same instance as the API).
-// key = tags, value = object name in the bucket ("zips/<uuid>.zip").
+// In-memory index of finished jobs (key = tags, value = object name in the
+// bucket). Kept for GET /; the durable copy now lives in Firebase (saveJob).
 const completedJobs = {};
 
 // Download one image and return its content as a Buffer.
@@ -104,6 +104,9 @@ function processZipRequest(tags) {
     })
     .then(objectName => {
       completedJobs[tags] = objectName;
+      return firebaseDb.saveJob(tags, objectName).then(() => objectName);
+    })
+    .then(objectName => {
       console.log('[zip] Done for tags "' + tags + '" -> gs://' + bucketName + '/' + objectName);
       return objectName;
     });
