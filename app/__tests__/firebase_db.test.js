@@ -47,23 +47,25 @@ describe('firebase_db', () => {
       databaseURL: 'https://custom.example'
     });
 
-    return firebaseDb.saveJob('sunset, beach', 'zips/abc-123.zip').then(path => {
-      const refPath = mockRef.mock.calls[0][0];
+    return firebaseDb
+      .saveJob('sunset, beach', 'zips/abc-123.zip', 'https://signed.example/abc.zip')
+      .then(path => {
+        const refPath = mockRef.mock.calls[0][0];
 
-      expect(path).toBe(refPath);
-      expect(refPath).toMatch(/^\/alice\/.+\/abc-123-zip$/);
-      // dots (ISO milliseconds + file extension) must be gone from the key
-      expect(refPath).not.toMatch(/\./);
+        expect(path).toBe(refPath);
+        expect(refPath).toMatch(/^\/alice\/.+\/abc-123-zip$/);
+        // dots (ISO milliseconds + file extension) must be gone from the key
+        expect(refPath).not.toMatch(/\./);
 
-      const value = mockSet.mock.calls[0][0];
-      expect(value).toMatchObject({
-        tags: 'sunset, beach',
-        storagePath: 'zips/abc-123.zip',
-        gsUri: 'gs://custom-bucket/zips/abc-123.zip',
-        publicUrl: 'https://storage.googleapis.com/custom-bucket/zips/abc-123.zip'
+        const value = mockSet.mock.calls[0][0];
+        expect(value).toMatchObject({
+          tags: 'sunset, beach',
+          storagePath: 'zips/abc-123.zip',
+          gsUri: 'gs://custom-bucket/zips/abc-123.zip',
+          downloadUrl: 'https://signed.example/abc.zip'
+        });
+        expect(typeof value.createdAt).toBe('number');
       });
-      expect(typeof value.createdAt).toBe('number');
-    });
   });
 
   test('reuses an existing app and falls back to default config', () => {
@@ -77,10 +79,11 @@ describe('firebase_db', () => {
 
     expect(mockInitializeApp).not.toHaveBeenCalled();
 
-    return firebaseDb.saveJob('x', 'zips/f.zip').then(() => {
+    return firebaseDb.saveJob('x', 'zips/f.zip', 'https://signed.example/f.zip').then(() => {
       expect(mockGetDatabase).toHaveBeenCalledWith(existingApp);
       expect(mockRef.mock.calls[0][0]).toMatch(/^\/pierrelouis\//);
       expect(mockSet.mock.calls[0][0].gsUri).toBe('gs://ecni22026bucket/zips/f.zip');
+      expect(mockSet.mock.calls[0][0].downloadUrl).toBe('https://signed.example/f.zip');
     });
   });
 });

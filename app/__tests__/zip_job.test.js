@@ -197,8 +197,12 @@ describe('processZipRequest(tags)', () => {
       expect(zipJob.completedJobs.trains).toBe(objectName);
       // only the first 10 photos are archived
       expect(archive.append).toHaveBeenCalledTimes(10);
-      // the finished job is persisted to Firebase
-      expect(mockSaveJob).toHaveBeenCalledWith('trains', objectName);
+      // the finished job is persisted to Firebase with a signed download URL
+      expect(mockSaveJob).toHaveBeenCalledWith(
+        'trains',
+        objectName,
+        'https://signed.example/zip.zip'
+      );
     });
   });
 });

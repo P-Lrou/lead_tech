@@ -1,5 +1,6 @@
 {
   "extends": "eslint:recommended",
+  "ignorePatterns": ["app/public/**"],
   "env": {
     "node": true,
     "es6": true,
