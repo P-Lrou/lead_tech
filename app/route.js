@@ -60,11 +60,13 @@ function route(app) {
       return res.status(400).send({ error: 'missing "tags" query parameter' });
     }
 
-    // Producer : on envoie les tags dans la queue et on répond immédiatement.
+    // Producer : on envoie les tags dans la queue puis on renvoie l'utilisateur
+    // vers la page de résultats (le lien de téléchargement y apparaîtra une fois
+    // le zip prêt, après rafraîchissement).
     return queueProducer
       .publishZipRequest(tags)
-      .then(messageId => {
-        return res.status(202).send({ status: 'queued', messageId, tags });
+      .then(() => {
+        return res.redirect(303, '/?tags=' + encodeURIComponent(tags) + '&tagmode=all');
       })
       .catch(error => {
         return res.status(500).send({ error: error.message });
