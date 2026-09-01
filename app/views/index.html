@@ -3,32 +3,42 @@
 
 <div class="container">
 
-  <%- include("_search_form.html") -%>
-
-  <% if (invalidParameters) { %>
-    <div class="alert alert-danger">
-      <strong>Invalid value for "tags" or "tagmode" input parameters</strong><br><br>
-      Tags should be formatted as a comma delimited list containing only letters, commas, and spaces.
-      Tag Mode must equal "all" or "any".
+  <div id="auth-required">
+    <div class="alert alert-info">
+      Please sign in with Google to use the application.
     </div>
-  <% } %>
+  </div>
 
-  <% if (searchResults) { %>
-    <%- include("_search_results.html") -%>
-  <% } %>
+  <div id="app-content" hidden>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Available zips</h3>
+    <%- include("_search_form.html") -%>
+
+    <% if (invalidParameters) { %>
+      <div class="alert alert-danger">
+        <strong>Invalid value for "tags" or "tagmode" input parameters</strong><br><br>
+        Tags should be formatted as a comma delimited list containing only letters, commas, and spaces.
+        Tag Mode must equal "all" or "any".
+      </div>
+    <% } %>
+
+    <% if (searchResults) { %>
+      <%- include("_search_results.html") -%>
+    <% } %>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Available zips</h3>
+      </div>
+      <div class="panel-body">
+        <div id="available-zips"><p class="text-muted">Loading&hellip;</p></div>
+      </div>
     </div>
-    <div class="panel-body">
-      <div id="available-zips"><p class="text-muted">Loading&hellip;</p></div>
-    </div>
+
   </div>
 
 </div>
 
-<script type="module" src="js/zips-list.js"></script>
+<script type="module" src="js/auth.js"></script>
 
 
 <%- include("_footer.html") -%>
