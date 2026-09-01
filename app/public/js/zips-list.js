@@ -1,39 +1,45 @@
 // Reads the already-generated zips straight from Firebase Realtime Database
 // (client side) and renders them into #available-zips.
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+// Started/stopped by auth.js depending on the sign-in state, because the
+// database rules require an authenticated user.
 import {
   getDatabase,
   ref,
   onValue
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyCIvTlTGG115yaWDeFqxi-Jc2oYH45FlME',
-  authDomain: 'ecni2-2026.firebaseapp.com',
-  databaseURL: 'https://ecni2-2026-default-rtdb.firebaseio.com',
-  projectId: 'ecni2-2026',
-  storageBucket: 'ecni2-2026.firebasestorage.app',
-  messagingSenderId: '1046535202867',
-  appId: '1:1046535202867:web:a23b26f739647f87221b46'
-};
+import { app } from './firebase-app.js';
 
 // same path the server writes to (see app/firebase_db.js)
 const PROFILE = 'pierrelouis';
 
-const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const container = document.getElementById('available-zips');
+let unsubscribe = null;
 
-onValue(
-  ref(db, PROFILE),
-  snapshot => render(snapshot.val()),
-  error => {
-    container.innerHTML =
-      '<div class="alert alert-warning">Could not load zips: ' +
-      escapeHtml(error.message) +
-      '</div>';
+export function startZipsList() {
+  if (unsubscribe) {
+    return;
   }
-);
+  container.innerHTML = '<p class="text-muted">Loading&hellip;</p>';
+  unsubscribe = onValue(
+    ref(db, PROFILE),
+    snapshot => render(snapshot.val()),
+    error => {
+      container.innerHTML =
+        '<div class="alert alert-warning">Could not load zips: ' +
+        escapeHtml(error.message) +
+        '</div>';
+    }
+  );
+}
+
+export function stopZipsList() {
+  if (unsubscribe) {
+    unsubscribe();
+    unsubscribe = null;
+  }
+  container.innerHTML = '';
+}
 
 function render(data) {
   if (!data) {
