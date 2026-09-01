@@ -12,7 +12,7 @@ const bucketName = process.env.GCS_BUCKET || 'ecni22026bucket';
 
 // Pas de BDD pour cette expérimentation : on garde l'état des jobs terminés
 // dans une variable de module (le worker tourne sur la même instance que l'API).
-// clef = tags, valeur = lien vers le zip.
+// clef = tags, valeur = nom de l'objet dans le bucket ("zips/<uuid>.zip").
 const completedJobs = {};
 
 // Télécharge une image et renvoie son contenu en Buffer.
@@ -61,8 +61,8 @@ function buildZip(files) {
 
 // Envoie le zip dans Google Cloud Storage sous un nom de fichier aléatoire.
 // Adapté du snippet fourni dans l'énoncé.
-function uploadZip(filename, zipBuffer) {
-  const file = storage.bucket(bucketName).file('zips/' + filename);
+function uploadZip(objectName, zipBuffer) {
+  const file = storage.bucket(bucketName).file(objectName);
   const stream = file.createWriteStream({
     metadata: {
       contentType: 'application/zip',
@@ -95,18 +95,33 @@ function processZipRequest(tags) {
     })
     .then(buildZip)
     .then(zipBuffer => {
-      const filename = crypto.randomUUID() + '.zip';
-      return uploadZip(filename, zipBuffer).then(() => filename);
+      const objectName = 'zips/' + crypto.randomUUID() + '.zip';
+      return uploadZip(objectName, zipBuffer).then(() => objectName);
     })
-    .then(filename => {
-      const link = 'https://storage.googleapis.com/' + bucketName + '/zips/' + filename;
-      completedJobs[tags] = link;
-      console.log('Zip job done for "' + tags + '": ' + link);
-      return link;
+    .then(objectName => {
+      completedJobs[tags] = objectName;
+      console.log('Zip job done for "' + tags + '": ' + objectName);
+      return objectName;
     });
+}
+
+// Génère un lien de téléchargement temporaire (2 jours) vers le zip.
+// Snippet fourni dans l'énoncé.
+function getSignedUrl(objectName) {
+  const options = {
+    action: 'read',
+    expires: Date.now() + 2 * 24 * 60 * 60 * 1000
+  };
+
+  return storage
+    .bucket(bucketName)
+    .file(objectName)
+    .getSignedUrl(options)
+    .then(urls => urls[0]);
 }
 
 module.exports = {
   processZipRequest,
+  getSignedUrl,
   completedJobs
 };
