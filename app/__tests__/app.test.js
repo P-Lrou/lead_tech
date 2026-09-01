@@ -1,7 +1,20 @@
 const request = require('supertest');
 
 jest.mock('../../app/photo_model');
+
+jest.mock('../../app/queue_producer', () => ({
+  publishZipRequest: jest.fn(() => Promise.resolve('mock-message-id'))
+}));
+
+jest.mock('../../app/zip_job', () => ({
+  processZipRequest: jest.fn(),
+  getSignedUrl: jest.fn(() => Promise.resolve('https://signed.example/archive.zip')),
+  completedJobs: {}
+}));
+
 const app = require('../../app/server');
+const queueProducer = require('../../app/queue_producer');
+const zipJob = require('../../app/zip_job');
 
 describe('index route', () => {
   afterEach(() => {
@@ -49,6 +62,59 @@ describe('index route', () => {
       .expect(500)
       .then(response => {
         expect(response.body).toEqual({ error: 'Internal server error' });
+      });
+  });
+
+  test('adds a signed download link when a zip already exists for the tags', () => {
+    zipJob.completedJobs.california = 'zips/existing.zip';
+
+    return request(app)
+      .get('/?tags=california&tagmode=all')
+      .expect(200)
+      .then(response => {
+        expect(zipJob.getSignedUrl).toHaveBeenCalledWith('zips/existing.zip');
+        expect(response.text).toMatch(/https:\/\/signed\.example\/archive\.zip/);
+        expect(response.text).toMatch(/Download zip/);
+        delete zipJob.completedJobs.california;
+      });
+  });
+});
+
+describe('zip route', () => {
+  afterEach(() => {
+    app.server.close();
+    jest.clearAllMocks();
+  });
+
+  test('rejects a request without the "tags" query parameter', () => {
+    return request(app)
+      .post('/zip')
+      .expect(400)
+      .then(response => {
+        expect(response.body).toEqual({ error: 'missing "tags" query parameter' });
+      });
+  });
+
+  test('publishes the tags and redirects back to the results page', () => {
+    return request(app)
+      .post('/zip?tags=sunset')
+      .expect(303)
+      .expect('Location', '/?tags=sunset&tagmode=all')
+      .then(() => {
+        expect(queueProducer.publishZipRequest).toHaveBeenCalledWith('sunset');
+      });
+  });
+
+  test('responds with a 500 when publishing fails', () => {
+    queueProducer.publishZipRequest.mockImplementationOnce(() =>
+      Promise.reject(new Error('pubsub unavailable'))
+    );
+
+    return request(app)
+      .post('/zip?tags=sunset')
+      .expect(500)
+      .then(response => {
+        expect(response.body).toEqual({ error: 'pubsub unavailable' });
       });
   });
 });

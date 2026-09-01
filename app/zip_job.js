@@ -127,5 +127,9 @@ function getSignedUrl(objectName) {
 module.exports = {
   processZipRequest,
   getSignedUrl,
-  completedJobs
+  completedJobs,
+  // exported for unit tests
+  downloadImage,
+  buildZip,
+  uploadZip
 };
