@@ -1,11 +1,11 @@
 const { PubSub } = require('@google-cloud/pubsub');
 
-// Le client s'authentifie automatiquement via la variable d'environnement
-// GOOGLE_APPLICATION_CREDENTIALS (chemin absolu vers la clef JSON du service account).
+// The client authenticates automatically from the GOOGLE_APPLICATION_CREDENTIALS
+// env var (absolute path to the service account JSON key).
 const pubSubClient = new PubSub({ projectId: process.env.GCP_PROJECT_ID });
 
-// Publie une demande de zippage dans la queue Pub/Sub.
-// Le worker consommera ce message pour zipper les photos correspondantes.
+// Publish a zip request to the Pub/Sub queue. The worker consumes this message
+// and zips the matching photos.
 function publishZipRequest(tags) {
   const topicName = process.env.PUBSUB_TOPIC;
   const dataBuffer = Buffer.from(JSON.stringify({ tags }));
