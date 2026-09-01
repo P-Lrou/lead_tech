@@ -2,12 +2,12 @@ const { PubSub } = require('@google-cloud/pubsub');
 
 const zipJob = require('./zip_job');
 
-// Même client que le producer : authentification automatique via
-// GOOGLE_APPLICATION_CREDENTIALS (clef JSON du service account).
+// Same client as the producer: authenticates automatically from
+// GOOGLE_APPLICATION_CREDENTIALS (service account JSON key).
 const pubSubClient = new PubSub({ projectId: process.env.GCP_PROJECT_ID });
 
-// Traite un message de demande de zippage reçu depuis la queue :
-// Flickr -> 10 premières images -> zip -> Google Cloud Storage.
+// Handle one zip request pulled from the queue:
+// Flickr search -> first 10 photos -> zip -> Google Cloud Storage.
 function handleMessage(message) {
   let payload;
 
@@ -33,8 +33,8 @@ function handleMessage(message) {
     });
 }
 
-// Ouvre la souscription et écoute les messages de la queue.
-// Le topic et la souscription portent le même nom : "ecni2-" + i.
+// Open the subscription and listen for queue messages.
+// The topic and the subscription share the same name: "ecni2-" + i.
 function startConsumer() {
   const subscriptionName = process.env.PUBSUB_TOPIC;
   const subscription = pubSubClient.subscription(subscriptionName);
@@ -48,7 +48,7 @@ function startConsumer() {
   return subscription;
 }
 
-// On ne branche pas la souscription pendant les tests (pas de connexion réseau).
+// Do not open the subscription during tests (avoids a real network connection).
 if (process.env.NODE_ENV !== 'test') {
   startConsumer();
 }

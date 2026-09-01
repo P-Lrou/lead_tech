@@ -5,24 +5,24 @@ const { Storage } = require('@google-cloud/storage');
 
 const photoModel = require('./photo_model');
 
-// Client Storage : authentification automatique via GOOGLE_APPLICATION_CREDENTIALS.
+// Storage client: authenticates automatically from GOOGLE_APPLICATION_CREDENTIALS.
 const storage = new Storage();
 
 const bucketName = process.env.GCS_BUCKET || 'ecni22026bucket';
 
-// Pas de BDD pour cette expérimentation : on garde l'état des jobs terminés
-// dans une variable de module (le worker tourne sur la même instance que l'API).
-// clef = tags, valeur = nom de l'objet dans le bucket ("zips/<uuid>.zip").
+// No database for this experiment: finished jobs are kept in a module-level
+// variable (the worker runs on the same instance as the API).
+// key = tags, value = object name in the bucket ("zips/<uuid>.zip").
 const completedJobs = {};
 
-// Télécharge une image et renvoie son contenu en Buffer.
+// Download one image and return its content as a Buffer.
 function downloadImage(url) {
   return new Promise((resolve, reject) => {
     https
       .get(url, response => {
         const status = response.statusCode;
 
-        // suit une éventuelle redirection
+        // follow a redirect if there is one
         if (status === 301 || status === 302) {
           response.resume();
           resolve(downloadImage(response.headers.location));
@@ -43,7 +43,7 @@ function downloadImage(url) {
   });
 }
 
-// Construit un zip en mémoire à partir d'une liste { name, buffer }.
+// Build an in-memory zip from a list of { name, buffer } entries.
 function buildZip(files) {
   return new Promise((resolve, reject) => {
     const archive = archiver('zip', { zlib: { level: 9 } });
@@ -59,8 +59,8 @@ function buildZip(files) {
   });
 }
 
-// Envoie le zip dans Google Cloud Storage sous un nom de fichier aléatoire.
-// Adapté du snippet fourni dans l'énoncé.
+// Upload the zip to Google Cloud Storage under a random file name.
+// Adapted from the snippet given in the assignment.
 function uploadZip(objectName, zipBuffer) {
   const file = storage.bucket(bucketName).file(objectName);
   const stream = file.createWriteStream({
@@ -109,8 +109,8 @@ function processZipRequest(tags) {
     });
 }
 
-// Génère un lien de téléchargement temporaire (2 jours) vers le zip.
-// Snippet fourni dans l'énoncé.
+// Generate a temporary (2-day) download link for the zip.
+// Snippet given in the assignment.
 function getSignedUrl(objectName) {
   const options = {
     action: 'read',
