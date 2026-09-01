@@ -35,8 +35,8 @@ function route(app) {
         ejsLocalVariables.photos = photos;
         ejsLocalVariables.searchResults = true;
 
-        // si un zip a déjà été généré pour ces tags, on ajoute un lien de
-        // téléchargement temporaire (signed URL) à la page
+        // if a zip already exists for these tags, add a temporary
+        // download link (signed URL) to the page
         const zipObject = zipJob.completedJobs[tags];
         if (!zipObject) {
           return res.render('index', ejsLocalVariables);
@@ -60,9 +60,9 @@ function route(app) {
       return res.status(400).send({ error: 'missing "tags" query parameter' });
     }
 
-    // Producer : on envoie les tags dans la queue puis on renvoie l'utilisateur
-    // vers la page de résultats (le lien de téléchargement y apparaîtra une fois
-    // le zip prêt, après rafraîchissement).
+    // Producer: push the tags onto the queue, then send the user back to the
+    // results page (the download link shows up there once the zip is ready,
+    // after a refresh).
     return queueProducer
       .publishZipRequest(tags)
       .then(() => {
