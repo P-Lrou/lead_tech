@@ -78,12 +78,15 @@ function uploadZip(objectName, zipBuffer) {
   });
 }
 
-// Job complet : Flickr -> 10 premières images -> zip -> Cloud Storage.
+// Full job: Flickr search -> first 10 photos -> in-memory zip -> Cloud Storage.
 function processZipRequest(tags) {
+  console.log('[zip] Building archive for tags "' + tags + '"');
+
   return photoModel
     .getFlickrPhotos(tags, 'all')
     .then(photos => {
       const firstTen = photos.slice(0, 10);
+      console.log('[zip] Downloading ' + firstTen.length + ' photo(s) for tags "' + tags + '"');
       return Promise.all(
         firstTen.map((photo, index) =>
           downloadImage(photo.media.b).then(buffer => ({
@@ -96,11 +99,12 @@ function processZipRequest(tags) {
     .then(buildZip)
     .then(zipBuffer => {
       const objectName = 'zips/' + crypto.randomUUID() + '.zip';
+      console.log('[zip] Uploading archive (' + zipBuffer.length + ' bytes) to gs://' + bucketName + '/' + objectName);
       return uploadZip(objectName, zipBuffer).then(() => objectName);
     })
     .then(objectName => {
       completedJobs[tags] = objectName;
-      console.log('Zip job done for "' + tags + '": ' + objectName);
+      console.log('[zip] Done for tags "' + tags + '" -> gs://' + bucketName + '/' + objectName);
       return objectName;
     });
 }
