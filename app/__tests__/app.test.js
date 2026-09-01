@@ -12,6 +12,8 @@ jest.mock('../../app/zip_job', () => ({
   completedJobs: {}
 }));
 
+jest.mock('../../app/firebase_db', () => ({ saveJob: jest.fn(() => Promise.resolve()) }));
+
 const app = require('../../app/server');
 const queueProducer = require('../../app/queue_producer');
 const zipJob = require('../../app/zip_job');

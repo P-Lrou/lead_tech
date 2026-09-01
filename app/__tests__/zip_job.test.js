@@ -19,6 +19,9 @@ jest.mock('@google-cloud/storage', () => ({
 
 jest.mock('../../app/photo_model', () => ({ getFlickrPhotos: jest.fn() }));
 
+const mockSaveJob = jest.fn(() => Promise.resolve('/pierrelouis/when/file'));
+jest.mock('../../app/firebase_db', () => ({ saveJob: mockSaveJob }));
+
 const https = require('https');
 const archiver = require('archiver');
 const photoModel = require('../../app/photo_model');
@@ -194,6 +197,8 @@ describe('processZipRequest(tags)', () => {
       expect(zipJob.completedJobs.trains).toBe(objectName);
       // only the first 10 photos are archived
       expect(archive.append).toHaveBeenCalledTimes(10);
+      // the finished job is persisted to Firebase
+      expect(mockSaveJob).toHaveBeenCalledWith('trains', objectName);
     });
   });
 });
