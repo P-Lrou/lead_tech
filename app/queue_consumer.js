@@ -1,22 +1,33 @@
 const { PubSub } = require('@google-cloud/pubsub');
 
+const zipJob = require('./zip_job');
+
 // Même client que le producer : authentification automatique via
 // GOOGLE_APPLICATION_CREDENTIALS (clef JSON du service account).
 const pubSubClient = new PubSub({ projectId: process.env.GCP_PROJECT_ID });
 
-// Traite un message de demande de zippage reçu depuis la queue.
+// Traite un message de demande de zippage reçu depuis la queue :
+// Flickr -> 10 premières images -> zip -> Google Cloud Storage.
 function handleMessage(message) {
+  let payload;
+
   try {
-    const payload = JSON.parse(message.data.toString());
-    console.log(`Zip request received (message ${message.id}):`, payload.tags);
-    // TODO (étape suivante) : rechercher les photos Flickr, zipper les 10
-    // premières, uploader le zip sur Cloud Storage puis écrire le path et les
-    // liens dans la Realtime Database Firebase.
+    payload = JSON.parse(message.data.toString());
   } catch (err) {
     console.log(`Invalid message ${message.id}: ${err.message}`);
+    message.ack();
+    return;
   }
 
-  message.ack();
+  console.log(`Zip request received (message ${message.id}):`, payload.tags);
+
+  zipJob
+    .processZipRequest(payload.tags)
+    .then(() => message.ack())
+    .catch(err => {
+      console.log(`Zip job failed for message ${message.id}: ${err.message}`);
+      message.ack();
+    });
 }
 
 // Ouvre la souscription et écoute les messages de la queue.
