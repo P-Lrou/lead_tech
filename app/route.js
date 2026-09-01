@@ -38,6 +38,16 @@ function route(app) {
         return res.status(500).send({ error });
       });
   });
+
+  app.post('/zip', (req, res) => {
+    const tags = req.query.tags;
+
+    if (!tags) {
+      return res.status(400).send({ error: 'missing "tags" query parameter' });
+    }
+
+    return res.status(202).send({ status: 'accepted', tags });
+  });
 }
 
 module.exports = route;
