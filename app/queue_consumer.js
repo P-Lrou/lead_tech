@@ -14,18 +14,21 @@ function handleMessage(message) {
   try {
     payload = JSON.parse(message.data.toString());
   } catch (err) {
-    console.log(`Invalid message ${message.id}: ${err.message}`);
+    console.error(`[worker] Discarding unreadable message ${message.id}: ${err.message}`);
     message.ack();
     return;
   }
 
-  console.log(`Zip request received (message ${message.id}):`, payload.tags);
+  console.log(`[worker] Received zip request for tags "${payload.tags}" (message ${message.id})`);
 
   zipJob
     .processZipRequest(payload.tags)
-    .then(() => message.ack())
+    .then(() => {
+      console.log(`[worker] Message ${message.id} acknowledged`);
+      message.ack();
+    })
     .catch(err => {
-      console.log(`Zip job failed for message ${message.id}: ${err.message}`);
+      console.error(`[worker] Zip request for tags "${payload.tags}" failed (message ${message.id}): ${err.message}`);
       message.ack();
     });
 }
@@ -38,10 +41,10 @@ function startConsumer() {
 
   subscription.on('message', handleMessage);
   subscription.on('error', error => {
-    console.log('Pub/Sub subscription error:', error.message);
+    console.error(`[worker] Subscription "${subscriptionName}" error: ${error.message}`);
   });
 
-  console.log(`Listening for zip requests on subscription "${subscriptionName}"`);
+  console.log(`[worker] Listening for zip requests on subscription "${subscriptionName}"`);
   return subscription;
 }
 

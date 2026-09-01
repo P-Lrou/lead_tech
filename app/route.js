@@ -48,7 +48,7 @@ function route(app) {
         });
       })
       .catch(error => {
-        console.log('aspdfonaposd', error)
+        console.error('[api] GET / failed to load photos from Flickr:', error.message);
         return res.status(500).send({ error });
       });
   });

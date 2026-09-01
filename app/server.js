@@ -26,6 +26,6 @@ require('./queue_consumer');
 // server
 const port = process.env.PORT || 3000;
 app.server = app.listen(port);
-console.log(`listening on port ${port}`);
+console.log(`[server] Listening on http://localhost:${port}`);
 
 module.exports = app;
