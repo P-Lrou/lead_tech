@@ -63,7 +63,7 @@ function render(data) {
           : '';
         return (
           '<li class="list-unstyled"><a href="' +
-          escapeHtml(job.publicUrl) +
+          escapeHtml(job.downloadUrl || job.publicUrl || '#') +
           '">' +
           escapeHtml(job.tags || 'zip') +
           '</a> <small class="text-muted">' +
