@@ -21,7 +21,7 @@ function handleMessage(message) {
 
   console.log(`[worker] Received zip request for tags "${payload.tags}" (message ${message.id})`);
 
-  zipJob
+  return zipJob
     .processZipRequest(payload.tags)
     .then(() => {
       console.log(`[worker] Message ${message.id} acknowledged`);
