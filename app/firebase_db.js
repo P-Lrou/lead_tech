@@ -18,8 +18,9 @@ function safeKey(value) {
 }
 
 // Persist a finished zip job under /<profile>/<zipTime>/<filename> so it
-// survives an instance restart. Stores the Cloud Storage path and the links.
-function saveJob(tags, objectName) {
+// survives an instance restart. Stores the Cloud Storage path and a signed
+// (temporary) download URL the web client can link to directly.
+function saveJob(tags, objectName, downloadUrl) {
   const filename = objectName.split('/').pop();
   const zipTime = safeKey(new Date().toISOString());
   const path = '/' + profile + '/' + zipTime + '/' + safeKey(filename);
@@ -30,7 +31,7 @@ function saveJob(tags, objectName) {
       tags,
       storagePath: objectName,
       gsUri: 'gs://' + bucketName + '/' + objectName,
-      publicUrl: 'https://storage.googleapis.com/' + bucketName + '/' + objectName,
+      downloadUrl,
       createdAt: Date.now()
     })
     .then(() => path);

@@ -104,7 +104,11 @@ function processZipRequest(tags) {
     })
     .then(objectName => {
       completedJobs[tags] = objectName;
-      return firebaseDb.saveJob(tags, objectName).then(() => objectName);
+      // store a signed (temporary) URL in Firebase: the bucket objects are not
+      // public, so a plain storage.googleapis.com link would be AccessDenied.
+      return getSignedUrl(objectName)
+        .then(downloadUrl => firebaseDb.saveJob(tags, objectName, downloadUrl))
+        .then(() => objectName);
     })
     .then(objectName => {
       console.log('[zip] Done for tags "' + tags + '" -> gs://' + bucketName + '/' + objectName);
