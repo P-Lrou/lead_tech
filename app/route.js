@@ -3,6 +3,7 @@ const photoModel = require('./photo_model');
 const queueProducer = require('./queue_producer');
 const zipJob = require('./zip_job');
 const rateLimiter = require('./rate_limiter');
+const rateLimitStore = require('./rate_limit_store');
 const mountMcpEndpoint = require('./mcp_endpoint');
 
 function route(app) {
@@ -66,27 +67,31 @@ function route(app) {
     }
 
     // Token bucket rate limiting, keyed by the caller's IP. Zipping is expensive
-    // and the button is easy to spam, so drop abusive callers with a 429.
+    // and the button is easy to spam, so drop abusive callers with a 429. The
+    // bucket state lives in the shared store (Redis when REDIS_HOST is set, an
+    // in-memory Map otherwise) so the limit holds across scaled-out instances.
     const ip = rateLimiter.getClientIp(req);
-    if (!rateLimiter.consume(ip)) {
-      res.set(
-        'Retry-After',
-        String(Math.ceil(rateLimiter.REQUEST_COST / rateLimiter.REFILL_RATE))
-      );
-      return res.status(429).send({ error: 'too many requests, slow down' });
-    }
+    return rateLimitStore.consume(ip, Date.now()).then(decision => {
+      if (!decision.allowed) {
+        res.set('Retry-After', String(decision.retryAfter));
+        return res.status(429).send({ error: 'too many requests, slow down' });
+      }
 
-    // Producer: push the tags onto the queue, then send the user back to the
-    // results page (the download link shows up there once the zip is ready,
-    // after a refresh).
-    return queueProducer
-      .publishZipRequest(tags)
-      .then(() => {
-        return res.redirect(303, '/?tags=' + encodeURIComponent(tags) + '&tagmode=all');
-      })
-      .catch(error => {
-        return res.status(500).send({ error: error.message });
-      });
+      // Producer: push the tags onto the queue, then send the user back to the
+      // results page (the download link shows up there once the zip is ready,
+      // after a refresh).
+      return queueProducer
+        .publishZipRequest(tags)
+        .then(() => {
+          return res.redirect(
+            303,
+            '/?tags=' + encodeURIComponent(tags) + '&tagmode=all'
+          );
+        })
+        .catch(error => {
+          return res.status(500).send({ error: error.message });
+        });
+    });
   });
 }
 

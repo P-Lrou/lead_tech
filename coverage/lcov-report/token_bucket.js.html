@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for rate_limiter.js</title>
+    <title>Code coverage report for token_bucket.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="prettify.css" />
     <link rel="stylesheet" href="base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> rate_limiter.js</h1>
+        <h1><a href="index.html">All files</a> token_bucket.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/22</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>22/22</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
@@ -136,7 +136,12 @@
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
 <a name='L73'></a><a href='#L73'>73</a>
-<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -146,73 +151,78 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">37x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">28x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Token bucket rate limiter, keyed by client IP.
-//
-// Storage is a plain in-memory Map: there is no persistence, so every bucket is
-// reset when the process restarts (good enough as a first step).
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// Pure token bucket algorithm - no I/O, no clock of its own.
+// This is the single source of truth for the rate-limiting maths; the Redis
+// backend re-implements the exact same steps in Lua (see rate_limit_store.js)
+// and app/__tests__ keeps the two in sync.
 //
 // The three tuning constants (see the assignment):
 //   r    - tokens regained per second
@@ -223,64 +233,69 @@ const REFILL_RATE = 1; // r
 const BUCKET_SIZE = 15; // b
 const REQUEST_COST = 3; // cost
 &nbsp;
-// key: ip -&gt; { tokens, updatedAt }
-// updatedAt is the epoch (ms) of the last *refill*, not of the last request:
-// while the bucket still has enough tokens we only decrement the count and leave
-// the timestamp alone.
-const buckets = new Map();
-&nbsp;
-// Extract the caller's IP address (snippet from the assignment).
-function getClientIp(req) {
-  return req.headers['x-forwarded-for'] || req.socket.remoteAddress || null;
-}
-&nbsp;
-// Try to spend REQUEST_COST tokens for `ip`.
-// Returns true when the request is allowed (forward), false when it is dropped.
-// `now` is injectable so tests can control the clock; it defaults to Date.now().
-function consume(ip, now) {
-  if (now === undefined) {
-    now = Date.now();
-  }
-&nbsp;
-  const entry = buckets.get(ip);
-&nbsp;
-  // First time we see this IP: start from a full bucket.
-  if (!entry) {
-    buckets.set(ip, { tokens: BUCKET_SIZE - REQUEST_COST, updatedAt: now });
-    return true;
+// Given the stored bucket state and the current time, decide whether one
+// request may spend REQUEST_COST tokens.
+//
+//   state : { tokens, updatedAt } or null/undefined when the caller is unknown
+//           (updatedAt is the epoch in ms of the last *refill*, not the last
+//            request)
+//   now   : current epoch in ms
+//
+// Returns { allowed, state } where `state` is the value to persist. On a drop
+// `state` is null: the caller must not write anything.
+function applyRequest(state, now) {
+  // First time we see this caller: start from a full bucket.
+  if (!state) {
+    return {
+      allowed: true,
+      state: { tokens: BUCKET_SIZE - REQUEST_COST, updatedAt: now }
+    };
   }
 &nbsp;
   // Enough tokens: just decrement, keep the last-refill timestamp untouched.
-  if (entry.tokens - REQUEST_COST &gt;= 0) {
-    entry.tokens -= REQUEST_COST;
-    return true;
+  if (state.tokens - REQUEST_COST &gt;= 0) {
+    return {
+      allowed: true,
+      state: { tokens: state.tokens - REQUEST_COST, updatedAt: state.updatedAt }
+    };
   }
 &nbsp;
   // Not enough tokens: try to refill with whatever accrued since the last refill.
-  const elapsedSec = Math.floor((now - entry.updatedAt) / 1000);
+  const elapsedSec = Math.floor((now - state.updatedAt) / 1000);
   const refilled = Math.min(
     BUCKET_SIZE,
-    entry.tokens + elapsedSec * REFILL_RATE
+    state.tokens + elapsedSec * REFILL_RATE
   );
 &nbsp;
   if (refilled - REQUEST_COST &gt;= 0) {
-    entry.tokens = refilled - REQUEST_COST;
-    entry.updatedAt = now;
-    return true;
+    return {
+      allowed: true,
+      state: { tokens: refilled - REQUEST_COST, updatedAt: now }
+    };
   }
 &nbsp;
   // Still not enough after the refill: drop the request, store nothing.
-  return false;
+  return { allowed: false, state: null };
+}
+&nbsp;
+// Seconds a dropped caller should wait before retrying (best effort).
+function retryAfterSec() {
+  return Math.ceil(REQUEST_COST / REFILL_RATE);
+}
+&nbsp;
+// How long an idle bucket can be forgotten: after this it would be full again
+// anyway, so dropping the key is equivalent to keeping it.
+function ttlMs() {
+  return Math.ceil(BUCKET_SIZE / REFILL_RATE) * 1000;
 }
 &nbsp;
 module.exports = {
-  consume,
-  getClientIp,
   REFILL_RATE,
   BUCKET_SIZE,
   REQUEST_COST,
-  // exposed so tests can reset the state between cases
-  buckets
+  applyRequest,
+  retryAfterSec,
+  ttlMs
 };
 &nbsp;</pre></td></tr></table></pre>
 

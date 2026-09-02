@@ -16,15 +16,19 @@ jest.mock('../../app/firebase_db', () => ({ saveJob: jest.fn(() => Promise.resol
 
 jest.mock('../../app/rate_limiter', () => ({
   getClientIp: jest.fn(() => '1.2.3.4'),
-  consume: jest.fn(() => true),
   REFILL_RATE: 1,
   REQUEST_COST: 3
+}));
+
+jest.mock('../../app/rate_limit_store', () => ({
+  consume: jest.fn(() => Promise.resolve({ allowed: true, retryAfter: 3 })),
+  connect: jest.fn(() => Promise.resolve())
 }));
 
 const app = require('../../app/server');
 const queueProducer = require('../../app/queue_producer');
 const zipJob = require('../../app/zip_job');
-const rateLimiter = require('../../app/rate_limiter');
+const rateLimitStore = require('../../app/rate_limit_store');
 
 describe('index route', () => {
   afterEach(() => {
@@ -129,7 +133,9 @@ describe('zip route', () => {
   });
 
   test('responds with a 429 when the rate limiter drops the request', () => {
-    rateLimiter.consume.mockImplementationOnce(() => false);
+    rateLimitStore.consume.mockImplementationOnce(() =>
+      Promise.resolve({ allowed: false, retryAfter: 3 })
+    );
 
     return request(app)
       .post('/zip?tags=sunset')

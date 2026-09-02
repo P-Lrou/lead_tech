@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>37/37</span>
+                <span class='fraction'>41/41</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/8</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>37/37</span>
+                <span class='fraction'>41/41</span>
             </div>
         
             
@@ -152,12 +152,26 @@
 <a name='L87'></a><a href='#L87'>87</a>
 <a name='L88'></a><a href='#L88'>88</a>
 <a name='L89'></a><a href='#L89'>89</a>
-<a name='L90'></a><a href='#L90'>90</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -217,12 +231,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,7 +249,11 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -246,8 +264,13 @@ const photoModel = require('./photo_model');
 const queueProducer = require('./queue_producer');
 const zipJob = require('./zip_job');
 const rateLimiter = require('./rate_limiter');
+const rateLimitStore = require('./rate_limit_store');
+const mountMcpEndpoint = require('./mcp_endpoint');
 &nbsp;
 function route(app) {
+  // MCP server exposed over a custom, bearer-protected /mcp endpoint.
+  mountMcpEndpoint(app);
+&nbsp;
   app.get('/', (req, res) =&gt; {
     const tags = req.query.tags;
     const tagmode = req.query.tagmode;
@@ -305,27 +328,31 @@ function route(app) {
     }
 &nbsp;
     // Token bucket rate limiting, keyed by the caller's IP. Zipping is expensive
-    // and the button is easy to spam, so drop abusive callers with a 429.
+    // and the button is easy to spam, so drop abusive callers with a 429. The
+    // bucket state lives in the shared store (Redis when REDIS_HOST is set, an
+    // in-memory Map otherwise) so the limit holds across scaled-out instances.
     const ip = rateLimiter.getClientIp(req);
-    if (!rateLimiter.consume(ip)) {
-      res.set(
-        'Retry-After',
-        String(Math.ceil(rateLimiter.REQUEST_COST / rateLimiter.REFILL_RATE))
-      );
-      return res.status(429).send({ error: 'too many requests, slow down' });
-    }
+    return rateLimitStore.consume(ip, Date.now()).then(decision =&gt; {
+      if (!decision.allowed) {
+        res.set('Retry-After', String(decision.retryAfter));
+        return res.status(429).send({ error: 'too many requests, slow down' });
+      }
 &nbsp;
-    // Producer: push the tags onto the queue, then send the user back to the
-    // results page (the download link shows up there once the zip is ready,
-    // after a refresh).
-    return queueProducer
-      .publishZipRequest(tags)
-      .then(() =&gt; {
-        return res.redirect(303, '/?tags=' + encodeURIComponent(tags) + '&amp;tagmode=all');
-      })
-      .catch(error =&gt; {
-        return res.status(500).send({ error: error.message });
-      });
+      // Producer: push the tags onto the queue, then send the user back to the
+      // results page (the download link shows up there once the zip is ready,
+      // after a refresh).
+      return queueProducer
+        .publishZipRequest(tags)
+        .then(() =&gt; {
+          return res.redirect(
+            303,
+            '/?tags=' + encodeURIComponent(tags) + '&amp;tagmode=all'
+          );
+        })
+        .catch(error =&gt; {
+          return res.status(500).send({ error: error.message });
+        });
+    });
   });
 }
 &nbsp;
@@ -337,7 +364,7 @@ module.exports = route;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-09-02T09:23:44.003Z
+                at 2026-09-02T12:34:17.535Z
             </div>
         <script src="prettify.js"></script>
         <script>

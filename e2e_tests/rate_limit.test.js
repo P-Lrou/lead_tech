@@ -6,6 +6,9 @@
 const express = require('express');
 const request = require('supertest');
 
+// Exercise the in-memory backend of the store, not Redis.
+delete process.env.REDIS_HOST;
+
 jest.mock('../app/queue_producer', () => ({
   publishZipRequest: jest.fn(() => Promise.resolve('mock-message-id'))
 }));
@@ -22,6 +25,7 @@ jest.mock('../app/zip_job', () => ({
 const route = require('../app/route');
 const queueProducer = require('../app/queue_producer');
 const rateLimiter = require('../app/rate_limiter');
+const rateLimitStore = require('../app/rate_limit_store');
 
 const BUCKET_SIZE = rateLimiter.BUCKET_SIZE;
 const REQUEST_COST = rateLimiter.REQUEST_COST;
@@ -57,7 +61,7 @@ function wait(ms) {
 
 describe('POST /zip rate limiting (token bucket)', () => {
   beforeEach(() => {
-    rateLimiter.buckets.clear();
+    rateLimitStore._memoryReset();
     queueProducer.publishZipRequest.mockClear();
   });
 

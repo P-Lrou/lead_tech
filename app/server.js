@@ -19,6 +19,15 @@ app.set('view engine', 'html');
 // load route
 require('./route')(app);
 
+// Connect the rate-limit store up front. No-op unless REDIS_HOST is set; when it
+// is, this opens the shared Redis connection so the first /zip does not pay for
+// it (a failure here is logged, and consume() retries on the next request).
+require('./rate_limit_store')
+  .connect()
+  .catch(err =>
+    console.error('[server] rate-limit store connect failed:', err.message)
+  );
+
 // consume the zip queue from this same instance (kept simple for render.com;
 // in production this worker should run on a separate server)
 require('./queue_consumer');
