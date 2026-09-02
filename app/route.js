@@ -2,6 +2,7 @@ const formValidator = require('./form_validator');
 const photoModel = require('./photo_model');
 const queueProducer = require('./queue_producer');
 const zipJob = require('./zip_job');
+const rateLimiter = require('./rate_limiter');
 
 function route(app) {
   app.get('/', (req, res) => {
@@ -58,6 +59,17 @@ function route(app) {
 
     if (!tags) {
       return res.status(400).send({ error: 'missing "tags" query parameter' });
+    }
+
+    // Token bucket rate limiting, keyed by the caller's IP. Zipping is expensive
+    // and the button is easy to spam, so drop abusive callers with a 429.
+    const ip = rateLimiter.getClientIp(req);
+    if (!rateLimiter.consume(ip)) {
+      res.set(
+        'Retry-After',
+        String(Math.ceil(rateLimiter.REQUEST_COST / rateLimiter.REFILL_RATE))
+      );
+      return res.status(429).send({ error: 'too many requests, slow down' });
     }
 
     // Producer: push the tags onto the queue, then send the user back to the

@@ -14,9 +14,17 @@ jest.mock('../../app/zip_job', () => ({
 
 jest.mock('../../app/firebase_db', () => ({ saveJob: jest.fn(() => Promise.resolve()) }));
 
+jest.mock('../../app/rate_limiter', () => ({
+  getClientIp: jest.fn(() => '1.2.3.4'),
+  consume: jest.fn(() => true),
+  REFILL_RATE: 1,
+  REQUEST_COST: 3
+}));
+
 const app = require('../../app/server');
 const queueProducer = require('../../app/queue_producer');
 const zipJob = require('../../app/zip_job');
+const rateLimiter = require('../../app/rate_limiter');
 
 describe('index route', () => {
   afterEach(() => {
@@ -117,6 +125,19 @@ describe('zip route', () => {
       .expect(500)
       .then(response => {
         expect(response.body).toEqual({ error: 'pubsub unavailable' });
+      });
+  });
+
+  test('responds with a 429 when the rate limiter drops the request', () => {
+    rateLimiter.consume.mockImplementationOnce(() => false);
+
+    return request(app)
+      .post('/zip?tags=sunset')
+      .expect(429)
+      .expect('Retry-After', '3')
+      .then(response => {
+        expect(response.body).toEqual({ error: 'too many requests, slow down' });
+        expect(queueProducer.publishZipRequest).not.toHaveBeenCalled();
       });
   });
 });
