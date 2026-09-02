@@ -37,6 +37,37 @@ function saveJob(tags, objectName, downloadUrl) {
     .then(() => path);
 }
 
+// List every finished job stored under /<profile>, flattened and sorted newest
+// first. Firebase gives us { zipTime: { fileKey: job } }.
+function listJobs() {
+  return getDatabase(app)
+    .ref('/' + profile)
+    .get()
+    .then(snapshot => {
+      const data = snapshot.val() || {};
+      const jobs = [];
+
+      Object.keys(data).forEach(zipTime => {
+        const byFile = data[zipTime] || {};
+        Object.keys(byFile).forEach(fileKey => {
+          const job = byFile[fileKey];
+          if (job) {
+            jobs.push({
+              tags: job.tags,
+              storagePath: job.storagePath,
+              gsUri: job.gsUri,
+              downloadUrl: job.downloadUrl,
+              createdAt: job.createdAt
+            });
+          }
+        });
+      });
+
+      return jobs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    });
+}
+
 module.exports = {
-  saveJob
+  saveJob,
+  listJobs
 };

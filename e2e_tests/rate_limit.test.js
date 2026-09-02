@@ -21,6 +21,11 @@ jest.mock('../app/zip_job', () => ({
   getSignedUrl: jest.fn(() => Promise.resolve('https://signed.example/a.zip')),
   completedJobs: {}
 }));
+// route.js -> mcp_endpoint -> mcp_server pulls in firebase_db (Admin SDK init).
+jest.mock('../app/firebase_db', () => ({
+  saveJob: jest.fn(() => Promise.resolve()),
+  listJobs: jest.fn(() => Promise.resolve([]))
+}));
 
 const route = require('../app/route');
 const queueProducer = require('../app/queue_producer');

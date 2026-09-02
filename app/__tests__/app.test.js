@@ -12,7 +12,10 @@ jest.mock('../../app/zip_job', () => ({
   completedJobs: {}
 }));
 
-jest.mock('../../app/firebase_db', () => ({ saveJob: jest.fn(() => Promise.resolve()) }));
+jest.mock('../../app/firebase_db', () => ({
+  saveJob: jest.fn(() => Promise.resolve()),
+  listJobs: jest.fn(() => Promise.resolve([]))
+}));
 
 jest.mock('../../app/rate_limiter', () => ({
   getClientIp: jest.fn(() => '1.2.3.4'),

@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1788352457547" clover="3.2.0">
-  <project timestamp="1788352457547" name="All files">
-    <metrics statements="279" coveredstatements="275" conditionals="87" coveredconditionals="82" methods="74" coveredmethods="72" elements="440" coveredelements="429" complexity="0" loc="279" ncloc="279" packages="1" files="13" classes="13"/>
+<coverage generated="1788353939358" clover="3.2.0">
+  <project timestamp="1788353939358" name="All files">
+    <metrics statements="315" coveredstatements="309" conditionals="109" coveredconditionals="96" methods="93" coveredmethods="90" elements="517" coveredelements="495" complexity="0" loc="315" ncloc="315" packages="1" files="14" classes="14"/>
     <file name="firebase_db.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/firebase_db.js">
-      <metrics statements="13" coveredstatements="13" conditionals="8" coveredconditionals="8" methods="3" coveredmethods="3"/>
-      <line num="1" count="2" type="stmt"/>
-      <line num="2" count="2" type="stmt"/>
-      <line num="5" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="6" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="7" count="2" type="cond" truecount="2" falsecount="0"/>
-      <line num="11" count="2" type="cond" truecount="2" falsecount="0"/>
+      <metrics statements="23" coveredstatements="23" conditionals="18" coveredconditionals="14" methods="8" coveredmethods="8"/>
+      <line num="1" count="4" type="stmt"/>
+      <line num="2" count="4" type="stmt"/>
+      <line num="5" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="6" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="7" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="11" count="4" type="cond" truecount="2" falsecount="0"/>
       <line num="17" count="4" type="stmt"/>
       <line num="24" count="2" type="stmt"/>
       <line num="25" count="2" type="stmt"/>
       <line num="26" count="2" type="stmt"/>
       <line num="28" count="2" type="stmt"/>
       <line num="37" count="2" type="stmt"/>
-      <line num="40" count="2" type="stmt"/>
+      <line num="43" count="2" type="stmt"/>
+      <line num="47" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="48" count="2" type="stmt"/>
+      <line num="50" count="2" type="stmt"/>
+      <line num="51" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="52" count="2" type="stmt"/>
+      <line num="53" count="2" type="stmt"/>
+      <line num="54" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="55" count="2" type="stmt"/>
+      <line num="66" count="2" type="cond" truecount="2" falsecount="2"/>
+      <line num="70" count="4" type="stmt"/>
     </file>
     <file name="form_validator.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/form_validator.js">
       <metrics statements="5" coveredstatements="5" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
@@ -39,30 +49,59 @@
       <line num="17" count="4" type="stmt"/>
     </file>
     <file name="mcp_endpoint.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/mcp_endpoint.js">
-      <metrics statements="23" coveredstatements="20" conditionals="10" coveredconditionals="6" methods="6" coveredmethods="5"/>
+      <metrics statements="19" coveredstatements="16" conditionals="6" coveredconditionals="3" methods="5" coveredmethods="4"/>
       <line num="1" count="2" type="stmt"/>
       <line num="2" count="2" type="stmt"/>
       <line num="3" count="2" type="stmt"/>
-      <line num="4" count="2" type="stmt"/>
-      <line num="8" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="7" count="2" type="cond" truecount="1" falsecount="1"/>
+      <line num="8" count="2" type="stmt"/>
+      <line num="11" count="2" type="stmt"/>
+      <line num="15" count="2" type="stmt"/>
+      <line num="17" count="9" type="cond" truecount="2" falsecount="0"/>
+      <line num="18" count="2" type="stmt"/>
+      <line num="19" count="2" type="stmt"/>
+      <line num="29" count="7" type="stmt"/>
+      <line num="34" count="7" type="stmt"/>
+      <line num="35" count="7" type="stmt"/>
+      <line num="38" count="7" type="stmt"/>
+      <line num="40" count="7" type="stmt"/>
+      <line num="42" count="0" type="stmt"/>
+      <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="44" count="0" type="stmt"/>
+      <line num="54" count="2" type="stmt"/>
+    </file>
+    <file name="mcp_server.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/mcp_server.js">
+      <metrics statements="30" coveredstatements="28" conditionals="16" coveredconditionals="11" methods="15" coveredmethods="14"/>
       <line num="9" count="2" type="stmt"/>
+      <line num="10" count="2" type="stmt"/>
+      <line num="12" count="2" type="stmt"/>
+      <line num="13" count="2" type="stmt"/>
       <line num="14" count="2" type="stmt"/>
-      <line num="17" count="2" type="stmt"/>
-      <line num="25" count="1" type="cond" truecount="3" falsecount="1"/>
-      <line num="26" count="1" type="stmt"/>
-      <line num="32" count="2" type="stmt"/>
-      <line num="34" count="5" type="cond" truecount="2" falsecount="0"/>
-      <line num="35" count="2" type="stmt"/>
-      <line num="36" count="2" type="stmt"/>
-      <line num="46" count="3" type="stmt"/>
-      <line num="51" count="3" type="stmt"/>
-      <line num="52" count="3" type="stmt"/>
-      <line num="55" count="3" type="stmt"/>
-      <line num="57" count="3" type="stmt"/>
-      <line num="59" count="0" type="stmt"/>
-      <line num="60" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="61" count="0" type="stmt"/>
-      <line num="71" count="2" type="stmt"/>
+      <line num="18" count="4" type="stmt"/>
+      <line num="22" count="1" type="stmt"/>
+      <line num="26" count="2" type="stmt"/>
+      <line num="34" count="0" type="cond" truecount="0" falsecount="4"/>
+      <line num="35" count="0" type="stmt"/>
+      <line num="39" count="2" type="stmt"/>
+      <line num="58" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="59" count="2" type="stmt"/>
+      <line num="60" count="2" type="stmt"/>
+      <line num="69" count="2" type="stmt"/>
+      <line num="74" count="2" type="stmt"/>
+      <line num="82" count="1" type="stmt"/>
+      <line num="83" count="2" type="stmt"/>
+      <line num="92" count="1" type="stmt"/>
+      <line num="97" count="2" type="stmt"/>
+      <line num="112" count="2" type="stmt"/>
+      <line num="114" count="2" type="stmt"/>
+      <line num="115" count="2" type="cond" truecount="4" falsecount="0"/>
+      <line num="116" count="1" type="stmt"/>
+      <line num="121" count="1" type="stmt"/>
+      <line num="122" count="1" type="stmt"/>
+      <line num="137" count="2" type="stmt"/>
+      <line num="138" count="2" type="stmt"/>
+      <line num="139" count="2" type="stmt"/>
+      <line num="142" count="2" type="stmt"/>
     </file>
     <file name="photo_model.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/photo_model.js">
       <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
