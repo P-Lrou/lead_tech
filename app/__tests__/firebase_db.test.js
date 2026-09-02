@@ -2,6 +2,8 @@ describe('firebase_db', () => {
   const OLD_ENV = process.env;
 
   let mockSet;
+  let mockGet;
+  let mockRemove;
   let mockRef;
   let mockGetDatabase;
   let mockInitializeApp;
@@ -10,7 +12,9 @@ describe('firebase_db', () => {
 
   function loadModule() {
     mockSet = jest.fn(() => Promise.resolve());
-    mockRef = jest.fn(() => ({ set: mockSet }));
+    mockGet = jest.fn(() => Promise.resolve({ val: () => null }));
+    mockRemove = jest.fn(() => Promise.resolve());
+    mockRef = jest.fn(() => ({ set: mockSet, get: mockGet, remove: mockRemove }));
     mockGetDatabase = jest.fn(() => ({ ref: mockRef }));
     mockInitializeApp = jest.fn(() => ({ name: 'app' }));
     mockApplicationDefault = jest.fn(() => 'default-credential');
@@ -66,6 +70,64 @@ describe('firebase_db', () => {
         });
         expect(typeof value.createdAt).toBe('number');
       });
+  });
+
+  test('listJobs flattens the profile tree and sorts newest first', () => {
+    process.env.FIREBASE_PROFILE = 'alice';
+    mockGetApps = jest.fn(() => []);
+
+    const firebaseDb = loadModule();
+
+    mockGet.mockImplementationOnce(() =>
+      Promise.resolve({
+        val: () => ({
+          '2026-01-01T00-00-00-000Z': {
+            'a-zip': {
+              tags: 'old',
+              storagePath: 'zips/a.zip',
+              gsUri: 'gs://b/zips/a.zip',
+              downloadUrl: 'u1',
+              createdAt: 100
+            }
+          },
+          '2026-02-02T00-00-00-000Z': {
+            'b-zip': {
+              tags: 'new',
+              storagePath: 'zips/b.zip',
+              gsUri: 'gs://b/zips/b.zip',
+              downloadUrl: 'u2',
+              createdAt: 200
+            }
+          }
+        })
+      })
+    );
+
+    return firebaseDb.listJobs().then(jobs => {
+      expect(mockRef).toHaveBeenCalledWith('/alice');
+      expect(jobs).toEqual([
+        {
+          tags: 'new',
+          storagePath: 'zips/b.zip',
+          gsUri: 'gs://b/zips/b.zip',
+          downloadUrl: 'u2',
+          createdAt: 200
+        },
+        {
+          tags: 'old',
+          storagePath: 'zips/a.zip',
+          gsUri: 'gs://b/zips/a.zip',
+          downloadUrl: 'u1',
+          createdAt: 100
+        }
+      ]);
+    });
+  });
+
+  test('listJobs returns an empty list when nothing is stored', () => {
+    mockGetApps = jest.fn(() => []);
+    const firebaseDb = loadModule();
+    return firebaseDb.listJobs().then(jobs => expect(jobs).toEqual([]));
   });
 
   test('reuses an existing app and falls back to default config', () => {

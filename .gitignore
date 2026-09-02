@@ -3,3 +3,4 @@ npm-debug.log*
 .DS_Store
 .env
 ecni2-*.json
+audit_sources/

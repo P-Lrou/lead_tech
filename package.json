@@ -11,20 +11,27 @@
     "start": "nodemon app/server.js",
     "test": "npm run lint && npm run jest",
     "test:e2e": "jest --runInBand e2e_tests/*.test.js",
+    "test:ratelimit": "jest --runInBand e2e_tests/rate_limit.test.js",
     "jest": "jest --coverage app/__tests__/*.test.js",
+    "mcp:token": "node app/mcp_token.js",
     "lint": "eslint app e2e_tests",
     "prettier": "prettier --write app/*.js app/__{tests,mocks}__/*.js e2e_tests/*.js"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^6.0.1",
     "@google-cloud/storage": "^7.22.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "archiver": "^7.0.1",
     "dotenv": "^17.4.2",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "firebase-admin": "^14.3.0",
     "got": "^14.4.9",
-    "serve-favicon": "^2.5.1"
+    "jsonwebtoken": "^9.0.3",
+    "redis": "^6.2.1",
+    "serve-favicon": "^2.5.1",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
