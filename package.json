@@ -19,13 +19,16 @@
   "dependencies": {
     "@google-cloud/pubsub": "^6.0.1",
     "@google-cloud/storage": "^7.22.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "archiver": "^7.0.1",
     "dotenv": "^17.4.2",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
     "firebase-admin": "^14.3.0",
     "got": "^14.4.9",
-    "serve-favicon": "^2.5.1"
+    "serve-favicon": "^2.5.1",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "eslint": "^8.57.1",

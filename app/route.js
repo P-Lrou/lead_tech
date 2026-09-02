@@ -3,8 +3,12 @@ const photoModel = require('./photo_model');
 const queueProducer = require('./queue_producer');
 const zipJob = require('./zip_job');
 const rateLimiter = require('./rate_limiter');
+const mountMcpEndpoint = require('./mcp_endpoint');
 
 function route(app) {
+  // MCP server exposed over a custom, bearer-protected /mcp endpoint.
+  mountMcpEndpoint(app);
+
   app.get('/', (req, res) => {
     const tags = req.query.tags;
     const tagmode = req.query.tagmode;
