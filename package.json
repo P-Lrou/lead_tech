@@ -46,7 +46,12 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "verbose": true
+    "verbose": true,
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/app/server.js",
+      "<rootDir>/app/mcp_token.js"
+    ]
   },
   "prettier": {
     "singleQuote": true

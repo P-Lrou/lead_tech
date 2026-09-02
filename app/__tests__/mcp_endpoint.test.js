@@ -149,6 +149,20 @@ describe('POST /mcp - MCP server', () => {
   });
 });
 
+describe('tool: ping', () => {
+  test('replies "pong" with no argument', () => {
+    return callTool('ping').then(result => {
+      expect(result.content[0].text).toBe('pong');
+    });
+  });
+
+  test('echoes the message back', () => {
+    return callTool('ping', { message: 'hi' }).then(result => {
+      expect(result.content[0].text).toBe('pong: hi');
+    });
+  });
+});
+
 describe('tool: search-flickr-photos', () => {
   test('returns the Flickr results for the given tags', () => {
     photoModel.getFlickrPhotos.mockResolvedValueOnce([
@@ -186,6 +200,17 @@ describe('tool: search-flickr-photos', () => {
       );
     });
   });
+
+  test('tolerates a photo without a media block', () => {
+    photoModel.getFlickrPhotos.mockResolvedValueOnce([
+      { title: 'no media', link: 'https://flickr/2' }
+    ]);
+    return callTool('search-flickr-photos', { tags: 'x' }).then(result => {
+      const payload = JSON.parse(result.content[0].text);
+      expect(payload.photos[0].image).toBeUndefined();
+      expect(payload.photos[0].thumbnail).toBeUndefined();
+    });
+  });
 });
 
 describe('tool: list-archives', () => {
@@ -202,6 +227,26 @@ describe('tool: list-archives', () => {
       expect(payload.archives[0].createdAtIso).toBe(
         new Date(200).toISOString()
       );
+    });
+  });
+
+  test('reports createdAtIso as null when the job has no timestamp', () => {
+    firebaseDb.listJobs.mockResolvedValueOnce([
+      { tags: 'cat', storagePath: 'zips/c.zip' }
+    ]);
+    return callTool('list-archives').then(result => {
+      const payload = JSON.parse(result.content[0].text);
+      expect(payload.archives[0].createdAtIso).toBeNull();
+    });
+  });
+
+  test('returns an empty list when Firebase has nothing', () => {
+    firebaseDb.listJobs.mockResolvedValueOnce([]);
+    return callTool('list-archives').then(result => {
+      expect(JSON.parse(result.content[0].text)).toEqual({
+        count: 0,
+        archives: []
+      });
     });
   });
 });
@@ -233,6 +278,15 @@ describe('tool: get-archive-download-url', () => {
     return callTool('get-archive-download-url', { tags: 'cat' }).then(result => {
       expect(result.isError).toBe(true);
       expect(result.content[0].text).toMatch(/No archive found/);
+      expect(zipJob.getSignedUrl).not.toHaveBeenCalled();
+    });
+  });
+
+  test('flags an error when the matching job has no storage path', () => {
+    firebaseDb.listJobs.mockResolvedValueOnce([{ tags: 'cat', createdAt: 200 }]);
+
+    return callTool('get-archive-download-url', { tags: 'cat' }).then(result => {
+      expect(result.isError).toBe(true);
       expect(zipJob.getSignedUrl).not.toHaveBeenCalled();
     });
   });
