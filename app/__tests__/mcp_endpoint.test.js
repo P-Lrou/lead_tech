@@ -1,7 +1,21 @@
-// Integration test for the bearer-protected /mcp endpoint. The real MCP server
-// and Streamable HTTP transport are exercised; only the collaborators the tools
+// Integration test for the JWT-protected /mcp endpoint. The real MCP server and
+// Streamable HTTP transport are exercised; only the collaborators the tools
 // reach (Flickr, Firebase, Cloud Storage) are stubbed.
-process.env.MCP_API_KEY = 'test-key';
+process.env.MCP_JWT_SECRET = 'test-secret';
+
+const jwt = require('jsonwebtoken');
+
+function mintToken(overrides) {
+  const opts = Object.assign(
+    { algorithm: 'HS256', audience: 'mcp-server', expiresIn: '5m' },
+    overrides && overrides.options
+  );
+  return jwt.sign(
+    (overrides && overrides.payload) || { scope: 'mcp' },
+    (overrides && overrides.secret) || 'test-secret',
+    opts
+  );
+}
 
 jest.mock('../../app/photo_model', () => ({ getFlickrPhotos: jest.fn() }));
 jest.mock('../../app/firebase_db', () => ({
@@ -24,7 +38,7 @@ const zipJob = require('../../app/zip_job');
 const app = express();
 mountMcpEndpoint(app);
 
-const AUTH = 'Bearer test-key';
+const AUTH = 'Bearer ' + mintToken();
 const ACCEPT = 'application/json, text/event-stream';
 
 function rpc(method, params, id) {
@@ -50,26 +64,50 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('POST /mcp - authorization', () => {
-  test('401 when the Authorization header is missing', () => {
-    return request(app)
-      .post('/mcp')
-      .set('Accept', ACCEPT)
+describe('POST /mcp - authorization (JWT)', () => {
+  function expect401(auth) {
+    const req = request(app).post('/mcp').set('Accept', ACCEPT);
+    if (auth !== undefined) {
+      req.set('Authorization', auth);
+    }
+    return req
       .send(rpc('initialize'))
       .expect(401)
-      .expect('WWW-Authenticate', 'Bearer')
+      .expect('WWW-Authenticate', /^Bearer/)
       .then(res => {
         expect(res.body.error.message).toBe('Unauthorized');
       });
-  });
+  }
 
-  test('401 when the bearer token does not match', () => {
+  test('401 when the Authorization header is missing', () => expect401());
+
+  test('401 when the scheme is not Bearer', () =>
+    expect401('Basic ' + Buffer.from('a:b').toString('base64')));
+
+  test('401 when the token is not a JWT', () => expect401('Bearer not-a-jwt'));
+
+  test('401 when the JWT is signed with the wrong secret', () =>
+    expect401('Bearer ' + mintToken({ secret: 'other-secret' })));
+
+  test('401 when the JWT is expired', () =>
+    expect401('Bearer ' + mintToken({ options: { expiresIn: -10 } })));
+
+  test('401 when the JWT has the wrong audience', () =>
+    expect401('Bearer ' + mintToken({ options: { audience: 'someone-else' } })));
+
+  test('200 with a valid JWT', () => {
     return request(app)
       .post('/mcp')
-      .set('Authorization', 'Bearer wrong')
+      .set('Authorization', AUTH)
       .set('Accept', ACCEPT)
-      .send(rpc('initialize'))
-      .expect(401);
+      .send(
+        rpc('initialize', {
+          protocolVersion: '2026-07-28',
+          capabilities: {},
+          clientInfo: { name: 'test', version: '1.0.0' }
+        })
+      )
+      .expect(200);
   });
 });
 

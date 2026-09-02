@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1788353939358" clover="3.2.0">
-  <project timestamp="1788353939358" name="All files">
-    <metrics statements="315" coveredstatements="309" conditionals="109" coveredconditionals="96" methods="93" coveredmethods="90" elements="517" coveredelements="495" complexity="0" loc="315" ncloc="315" packages="1" files="14" classes="14"/>
+<coverage generated="1788354318273" clover="3.2.0">
+  <project timestamp="1788354318273" name="All files">
+    <metrics statements="323" coveredstatements="317" conditionals="113" coveredconditionals="100" methods="94" coveredmethods="91" elements="530" coveredelements="508" complexity="0" loc="323" ncloc="323" packages="1" files="14" classes="14"/>
     <file name="firebase_db.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/firebase_db.js">
       <metrics statements="23" coveredstatements="23" conditionals="18" coveredconditionals="14" methods="8" coveredmethods="8"/>
       <line num="1" count="4" type="stmt"/>
@@ -49,26 +49,34 @@
       <line num="17" count="4" type="stmt"/>
     </file>
     <file name="mcp_endpoint.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/mcp_endpoint.js">
-      <metrics statements="19" coveredstatements="16" conditionals="6" coveredconditionals="3" methods="5" coveredmethods="4"/>
+      <metrics statements="27" coveredstatements="24" conditionals="10" coveredconditionals="7" methods="6" coveredmethods="5"/>
       <line num="1" count="2" type="stmt"/>
       <line num="2" count="2" type="stmt"/>
       <line num="3" count="2" type="stmt"/>
-      <line num="7" count="2" type="cond" truecount="1" falsecount="1"/>
-      <line num="8" count="2" type="stmt"/>
+      <line num="4" count="2" type="stmt"/>
+      <line num="10" count="2" type="cond" truecount="1" falsecount="1"/>
       <line num="11" count="2" type="stmt"/>
-      <line num="15" count="2" type="stmt"/>
-      <line num="17" count="9" type="cond" truecount="2" falsecount="0"/>
-      <line num="18" count="2" type="stmt"/>
+      <line num="17" count="14" type="cond" truecount="2" falsecount="0"/>
+      <line num="18" count="14" type="cond" truecount="2" falsecount="0"/>
       <line num="19" count="2" type="stmt"/>
-      <line num="29" count="7" type="stmt"/>
-      <line num="34" count="7" type="stmt"/>
-      <line num="35" count="7" type="stmt"/>
-      <line num="38" count="7" type="stmt"/>
-      <line num="40" count="7" type="stmt"/>
-      <line num="42" count="0" type="stmt"/>
-      <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
-      <line num="44" count="0" type="stmt"/>
-      <line num="54" count="2" type="stmt"/>
+      <line num="21" count="12" type="stmt"/>
+      <line num="22" count="12" type="stmt"/>
+      <line num="27" count="4" type="stmt"/>
+      <line num="32" count="2" type="stmt"/>
+      <line num="36" count="2" type="stmt"/>
+      <line num="38" count="14" type="cond" truecount="2" falsecount="0"/>
+      <line num="39" count="6" type="stmt"/>
+      <line num="40" count="6" type="stmt"/>
+      <line num="50" count="8" type="stmt"/>
+      <line num="55" count="8" type="stmt"/>
+      <line num="56" count="8" type="stmt"/>
+      <line num="59" count="8" type="stmt"/>
+      <line num="61" count="8" type="stmt"/>
+      <line num="63" count="0" type="stmt"/>
+      <line num="64" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="65" count="0" type="stmt"/>
+      <line num="75" count="2" type="stmt"/>
+      <line num="76" count="2" type="stmt"/>
     </file>
     <file name="mcp_server.js" path="/Users/pierrelouisrousseaux/Developer/Gobelins/lead_tech/app/mcp_server.js">
       <metrics statements="30" coveredstatements="28" conditionals="16" coveredconditionals="11" methods="15" coveredmethods="14"/>
