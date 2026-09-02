@@ -130,6 +130,31 @@ describe('firebase_db', () => {
     return firebaseDb.listJobs().then(jobs => expect(jobs).toEqual([]));
   });
 
+  test('listJobs skips empty buckets / null entries and sorts undated jobs last', () => {
+    mockGetApps = jest.fn(() => []);
+    const firebaseDb = loadModule();
+
+    mockGet.mockImplementationOnce(() =>
+      Promise.resolve({
+        val: () => ({
+          emptyBucket: null,
+          bucket: {
+            nullJob: null,
+            undatedA: { tags: 'undatedA', storagePath: 'zips/a.zip' },
+            undatedB: { tags: 'undatedB', storagePath: 'zips/b.zip' },
+            dated: { tags: 'dated', storagePath: 'zips/d.zip', createdAt: 50 }
+          }
+        })
+      })
+    );
+
+    return firebaseDb.listJobs().then(jobs => {
+      // null bucket + null job dropped; dated first, the two undated ones last
+      expect(jobs.map(j => j.tags)).toEqual(['dated', 'undatedA', 'undatedB']);
+      expect(jobs[1].createdAt).toBeUndefined();
+    });
+  });
+
   test('reuses an existing app and falls back to default config', () => {
     delete process.env.FIREBASE_DB_URL;
     delete process.env.FIREBASE_PROFILE;

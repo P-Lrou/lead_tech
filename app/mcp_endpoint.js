@@ -7,6 +7,7 @@ const { createMcpServer } = require('./mcp_server');
 //   Authorization: Bearer <jwt>
 // Mint one with `npm run mcp:token` (see app/mcp_token.js). The token must be
 // signed with MCP_JWT_SECRET and carry the "mcp-server" audience.
+/* istanbul ignore next - the fallback is a dev-only default; real envs set MCP_JWT_SECRET */
 const MCP_JWT_SECRET = process.env.MCP_JWT_SECRET || 'dev-mcp-jwt-secret-change-me';
 const MCP_JWT_AUDIENCE = 'mcp-server';
 
@@ -61,6 +62,7 @@ function mountMcpEndpoint(app) {
       .then(() => transport.handleRequest(req, res, req.body))
       .catch(error => {
         console.error('[mcp] request failed:', error);
+        /* istanbul ignore else - if a partial response was already streamed there is nothing left to send */
         if (!res.headersSent) {
           res.status(500).json({
             jsonrpc: '2.0',
